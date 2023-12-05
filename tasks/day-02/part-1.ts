@@ -1,7 +1,7 @@
 import path from "node:path";
 
-const example = Bun.file(path.join(import.meta.dir, "../inputs/day-02/example.txt"));
-const input = Bun.file(path.join(import.meta.dir, "../inputs/day-02/input.txt"));
+const example = Bun.file(path.join(import.meta.dir, "../../inputs/day-02/example.txt"));
+const input = Bun.file(path.join(import.meta.dir, "../../inputs/day-02/input.txt"));
 
 const lines = (await input.text()).split("\n");
 
@@ -45,23 +45,21 @@ const checkAllSetsInAGame = (game: string) => {
 function main(lines: string[]) {
     const areGamesPossible = Array.from(getGames(lines).values())
         .map((games) => games.map((game) => checkAllSetsInAGame(game)))
-
     
-    // get possible games IDs (if true, return ID)
+    // filter games where all sets are true
     const possibleGames = areGamesPossible
         .map((game) => game
         .map((set) => set.length === set
         .filter((value) => value !== false).length))
 
-        console.log(possibleGames)
-
+    // get IDs of all possible games
     const returnTrueIndexes = possibleGames
         .map((game, index) => game
         .every((game) => game) ? index + 1 : -1)
         .filter((index) => index !== -1)
 
     // sum IDs of possible games
-    return returnTrueIndexes.reduce((acc, current) => current ? acc + current : acc, 0)
+    return returnTrueIndexes.reduce((sum, current) => current ? sum + current : sum, 0)
 }
 
 console.log(main(lines));

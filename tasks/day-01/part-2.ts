@@ -1,8 +1,8 @@
 import path from "node:path";
 
-const example = Bun.file(path.join(import.meta.dir, "../inputs/day-01/example.txt"));
-const example2 = Bun.file(path.join(import.meta.dir, "../inputs/day-01/example-2.txt"));
-const input = Bun.file(path.join(import.meta.dir, "../inputs/day-01/input.txt"));
+const example = Bun.file(path.join(import.meta.dir, "../../inputs/day-01/example.txt"));
+const example2 = Bun.file(path.join(import.meta.dir, "../../inputs/day-01/example-2.txt"));
+const input = Bun.file(path.join(import.meta.dir, "../../inputs/day-01/input.txt"));
 
 const lines = (await input.text()).split("\n");
 
