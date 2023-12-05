@@ -14,37 +14,54 @@ type Cube = {
 const initialCube: Cube = { blue: 0, green: 0, red: 0 }
 const availableCubes: Cube = { blue: 14, green: 13, red: 12 }
 
-const revealedCubes = (): Cube[] => {
-    const splitByMultipleOperators = (string: string) => string.split(',').join(';').split(';')
+const getGames = (lines: string[]) => new Map([...lines]
+    .map((game, index) => {
+        const sliceAt = game.indexOf(':') + 2;
+        return [index + 1, (game.slice(sliceAt)).split(';').map((set) => set.trim())];
+}))
 
-    return lines.map((line) => {
-        const sliceAt = line.indexOf(':') + 2
+const revealedCubesInSet = (set: string): Cube => set.split(',')
+    .map((string) => string.trim().split(' ').reverse())
+    .reduce((previous, current) => {
+        const cubeColor = current[0] as keyof Cube;
+        const numberOfCubes = current[1];
 
-        return splitByMultipleOperators(line.slice(sliceAt))
-            .map((string) => string.trim().split(' ').reverse())
-            .reduce((previous, current) => {
-                const cubeColor = current[0] as keyof Cube;
-                const numberOfCubes = current[1];
-                
-                    return ({ ...previous, [cubeColor]: previous[cubeColor] + Number(numberOfCubes) });
-                }, initialCube);
-    } 
-    );
+        return ({ ...previous, [cubeColor]: previous[cubeColor] + Number(numberOfCubes) });
+    }, initialCube)
+
+
+const divideGameToSets = (string: string) => string.split(',')
+
+const checkAllSetsInAGame = (game: string) => {
+    //  If string contains color, remove related number from available cubes:
+    return divideGameToSets(game)
+        .map((set) => revealedCubesInSet(set))
+        .map((cube) => cube.blue <= availableCubes.blue 
+            && cube.green <= availableCubes.green 
+            && cube.red <= availableCubes.red)
 }
 
 // Compare revealed cubes (from example or input) with available cubes
-function main() {
-    //  If string contains color, remove related number from available cubes:
-    const possibleGames = revealedCubes().map((cube) => cube.blue < availableCubes.blue 
-        && cube.green < availableCubes.green 
-        && cube.red < availableCubes.red
-    )
+function main(lines: string[]) {
+    const areGamesPossible = Array.from(getGames(lines).values())
+        .map((games) => games.map((game) => checkAllSetsInAGame(game)))
 
-    console.log(revealedCubes())
-
+    
     // get possible games IDs (if true, return ID)
+    const possibleGames = areGamesPossible
+        .map((game) => game
+        .map((set) => set.length === set
+        .filter((value) => value !== false).length))
+
+        console.log(possibleGames)
+
+    const returnTrueIndexes = possibleGames
+        .map((game, index) => game
+        .every((game) => game) ? index + 1 : -1)
+        .filter((index) => index !== -1)
+
     // sum IDs of possible games
-    return possibleGames.reduce((acc, current, index) => current ? acc + index + 1 : acc, 0)
+    return returnTrueIndexes.reduce((acc, current) => current ? acc + current : acc, 0)
 }
 
-console.log(main());
+console.log(main(lines));
